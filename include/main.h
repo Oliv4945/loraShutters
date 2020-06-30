@@ -10,7 +10,7 @@
 
 
 // Globals
-uint16_t txInterval;
+uint16_t sleep_between_tx;
 uint8_t old_state_percent;
 
 // Objects
@@ -25,7 +25,7 @@ void os_getDevEui (u1_t* buf) { memcpy_P(buf, DEVEUI, 8); }
 void os_getDevKey (u1_t* buf) { memcpy_P(buf, APPKEY, 16); }
 
 float readVoltage_f(int pin);
-void low_power_delay_s(float txInterval);
+void low_power_delay_s(float delay_float);
 
 void shutter_move( uint8_t pin, bool wait_full_movement );
 void shutter_close_partially(uint8_t state_percent);

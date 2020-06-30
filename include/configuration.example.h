@@ -18,7 +18,7 @@
 #define PIN_SHUTTER_DOWN 4
 #define PIN_SHUTTER_UP 5
 const uint8_t lppChannelVoltage = 0;
-const uint16_t defaultTxInterval = 2; // 5 * 60;
+const uint16_t default_sleep_between_tx = 2; // 5 * 60;
 const float battery_calibration = 0.00723496999;
 const float full_shutter_movement = 23;
 const period_t time_remote_button_pressed = SLEEP_120MS;

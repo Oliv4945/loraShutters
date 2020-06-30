@@ -36,7 +36,7 @@ void setup() {
     Serial.begin(57600);
     Serial.print(F("Starting\n"));
 
-    txInterval = defaultTxInterval;
+    sleep_between_tx = default_sleep_between_tx;
 
     // LMIC init
 #ifdef USE_WATCHDOG
@@ -126,9 +126,9 @@ void onEvent (ev_t ev) {
                 Serial.println(F(" bytes of payload"));
                 // Fport 1
                 if (LMIC.frame[LMIC.dataBeg-1] == 1) {
-                    txInterval = (LMIC.frame[LMIC.dataBeg] << 8) + LMIC.frame[LMIC.dataBeg + 1];
+                    sleep_between_tx = (LMIC.frame[LMIC.dataBeg] << 8) + LMIC.frame[LMIC.dataBeg + 1];
                     Serial.print("New sleep time:");
-                    Serial.println(txInterval);
+                    Serial.println(sleep_between_tx);
                 // Fport 2
                 } else if (LMIC.frame[LMIC.dataBeg-1] == 2) {
                     shutter_manage(LMIC.frame[LMIC.dataBeg]);
@@ -136,7 +136,7 @@ void onEvent (ev_t ev) {
             }
             // Enter in sleep mode
             delay(1000); // TBC - Remove it, just to flush serial rx
-            low_power_delay_s( (float) txInterval );
+            low_power_delay_s( (float) sleep_between_tx );
 
             // Schedule next transmission
             // os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
@@ -261,12 +261,12 @@ void shutter_manage( uint8_t state_percent ) {
     delay(1000);
 }
 
-void low_power_delay_s(float tx_interval_float) {
+void low_power_delay_s(float delay_float) {
     // Integer as ( tx_interval_ms - sleep_time ) can be lower than 0
     int16_t sleep_time = 0;
-    int16_t tx_interval_s = (int16_t) tx_interval_float;
+    int16_t tx_interval_s = (int16_t) delay_float;
 
-    int16_t tx_interval_ms = ( tx_interval_float - ((float) tx_interval_s) ) * 1000;
+    int16_t tx_interval_ms = ( delay_float - ((float) tx_interval_s) ) * 1000;
     ASSERT( tx_interval_ms < 1000 );
 
 #ifdef USE_WATCHDOG
