@@ -135,7 +135,7 @@ void onEvent (ev_t ev) {
                 }
             }
             // Enter in sleep mode
-            delay(1000); // TBC - Remove it, just to flush serial rx
+            wdt_reset(); delay(1000); // TBC - Remove it, just to flush serial rx
             low_power_delay_s( (float) sleep_between_tx );
 
             // Schedule next transmission
@@ -205,14 +205,13 @@ float readVoltage_f(int pin) {
 
 
 void shutter_move( uint8_t pin, bool wait_full_movement ) {
-    delay(1000);
     pinMode( pin, OUTPUT );
     digitalWrite( pin, LOW );
     LowPower.powerDown( time_remote_button_pressed, ADC_OFF, BOD_OFF );
     digitalWrite( pin, HIGH );
     pinMode( pin, INPUT );
     if ( wait_full_movement == true ) {
-        delay( full_shutter_movement * 1000 );
+        low_power_delay_s( (float) full_shutter_movement );
     }
 }
 
@@ -221,7 +220,7 @@ void shutter_close_partially( uint8_t state_percent ) {
     shutter_move( PIN_SHUTTER_DOWN, true );
 
     shutter_move( PIN_SHUTTER_UP, false ); // Partially open it
-    delay( full_shutter_movement * state_percent / 100 * 1000 );
+    low_power_delay_s( (float) full_shutter_movement * state_percent / 100 );
     shutter_move( PIN_SHUTTER_UP, false ); // Stop the movement
 }
 
@@ -230,7 +229,7 @@ void shutter_open_partially( uint8_t state_percent ) {
     shutter_move( PIN_SHUTTER_UP, true );
 
     shutter_move( PIN_SHUTTER_DOWN, false ); // Partially close it
-    delay( full_shutter_movement * state_percent / 100 * 1000 );
+    low_power_delay_s( (float) full_shutter_movement * (100 - state_percent) / 100 );
     shutter_move( PIN_SHUTTER_DOWN, false ); // Partially close it
 }
 
@@ -258,7 +257,6 @@ void shutter_manage( uint8_t state_percent ) {
         shutter_open_partially( state_percent );
     }
     old_state_percent = state_percent;
-    delay(1000);
 }
 
 void low_power_delay_s(float delay_float) {
