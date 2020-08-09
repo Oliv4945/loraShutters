@@ -179,6 +179,9 @@ void onEvent (ev_t ev) {
 
 
 void do_send(osjob_t* j) {
+#ifdef USE_WATCHDOG
+    wdt_reset();
+#endif
     // Check if there is not a current TX/RX job running
     if (LMIC.opmode & OP_TXRXPEND) {
         Serial.println(F("OP_TXRXPEND, not sending"));
@@ -195,6 +198,9 @@ void do_send(osjob_t* j) {
 }
 
 float readVoltage_f(int pin) {
+#ifdef USE_WATCHDOG
+    wdt_reset();
+#endif
     float voltage;
     // Vin = analogRead(pin)*3.3/1024*2*417/406; // Read value*3.3/1024, Times 2 for resistors, *417/406 for calibration
     voltage = ((float) analogRead(pin)) * battery_calibration; // TBC - Add calibration value in configuration.h
